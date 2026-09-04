@@ -1,0 +1,14 @@
+
+# backup files power bi
+*.pbit
+
+# Temporary files
+*.tmp
+*.temp
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# VS code
+.vscode/
