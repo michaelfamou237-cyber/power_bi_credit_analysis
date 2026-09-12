@@ -222,6 +222,12 @@ L'objectif de ce projet est de construire une solution analytique permettant de 
 
 	Comparaisons : Gender, Married, Education, Dependents, autres caractéristiques pertinentes. L'analyse sera présentée comme exploratoire.
 
+
+	Page 5 — Complementarité BI et Machine Learning (ML)
+		« Quelles sont les observations communes et dissemblantes entre BI et ML. »
+
+	Comparaisons : affichage de resultats clés et conlusion
+
 *********************************************************************************************************************************************************************
 			12. Technologies utilisées
 *********************************************************************************************************************************************************************
