@@ -3,233 +3,188 @@
 								1. Contexte bancaire
 ***********************************************************************************************************************************************************************
 
-L'octroi de crédit constitue une activité centrale pour les établissements financiers. La banque doit être capable d'évaluer les demandes reçues, de comprendre les caractéristiques des demandeurs 
-et d'analyser les décisions d'octroi afin d'améliorer le pilotage de son processus de crédit.
-Dans ce projet, nous exploitons un historique de 614 demandes de crédit contenant des informations relatives :
-	- Au profil du demandeur
-	- À sa situation familiale et professionnelle
-	- À ses revenus
-	- Au montant demandé
-	- Aux caractéristiques du crédit
-	- À son historique de crédit
-	- À sa zone de résidence
-	- Ainsi qu'à la décision finale d'octroi
+	Le projet est réalisé avec Power BI dans une logique de Business Intelligence et d'aide à la décision
+	L'octroi de crédit est une activité à fort enjeu pour les institutions financières : il faut développer le portefeuille tout en maîtrisant le risque de défaut. 
+	Les données historiques de demandes de crédit permettent de comprendre la structure de la demande, les profils des demandeurs et les logiques d'octroi.
+	Ce projet s'inscrit dans une démarche Business Intelligence & Data Analytics avec Power BI. Il vise à transformer des données brutes en insights actionnables pour la décision.
+	Complémentarité avec le projet Machine Learning.
 
-Le projet est réalisé avec Power BI dans une logique de Business Intelligence et d'aide à la décision
+	Ce projet utilise le même jeu de données qu'un projet de ML consacré à la prédiction d'octroi. Les deux projets sont complémentaires mais répondent à des questions différentes :
+		- Machine Learning : Peut-on prédire la décision d'octroi pour une nouvelle demande ?
+		- Business Intelligence : Que révèlent les données historiques sur les structures de décision, et quelles associations peut-on mettre en évidence entre les caractéristiques des demandeurs et la décision finale ?
+	Le projet BI ne cherche pas à reproduire le modèle prédictif. Il apporte une vision diagnostique et exploratoire pour comprendre le passé et éclairer les décisions futures.
 
-***********************************************************************************************************************************************************************
-								2. Problématique métier
-***********************************************************************************************************************************************************************
-« Comment l'analyse des demandes de crédit et des décisions d'octroi peut-elle fournir aux décideurs une meilleure compréhension des profils des demandeurs, des caractéristiques financières 
-et des facteurs associés aux décisions, afin d'appuyer le pilotage du processus d'octroi ? »
+*********************************************************************************************************************************************************************
+								2. Problématique Métier
+********************************************************************************************************************************************************************************
+	L'enjeu n'est pas seulement de compter les accords et les refus. Il s'agit de comprendre quelles caractéristiques des demandes sont associées aux décisions observées, 
+	et si ces associations sont structurelles ou dues à des cas isolés.
+	La Problématique centrale : Comment exploiter les données historiques de demandes de crédit pour identifier des structures, 
+				des écarts et des associations pertinentes entre les caractéristiques des demandeurs, leurs capacités financières et les décisions d'octroi ?
 
-L'objectif n'est pas de déterminer une relation causale entre une caractéristique et l'octroi d'un crédit.
-Il s'agit plutôt d'identifier et de visualiser les associations observées dans les données historiques, afin de fournir aux décideurs une information structurée et exploitable.
+*************************************************************************************************************************************************************************
+								3. Objectifs Data Analytics
+*****************************************************************************************************************************************************************************
+	les objectifs que visent ce travail sont:
+
+		1.Caractériser la population des demandeurs.
+		2.Mesurer la structure globale des décisions d'octroi.
+		3.Étudier l'association entre l'historique de crédit et la décision.
+		4.Comparer les caractéristiques financières (revenus, montants, ratios) entre accords et refus.
+		5.Analyser la dispersion (variance, écart-type) pour détecter des profils à risque.
+		6.Rechercher des effets de segmentation (croisement de variables).
+		7.Transformer les résultats statistiques en recommandations métier.
 
 ************************************************************************************************************************************************************************
-								3. Objectif Data / Business Intelligence
+								4. Approche Analytique
+***********************************************************************************************************************************************************************
+		Le projet suit une démarche structurée :
+		Données brutes >> Audit >> Nettoyage >> Feature Engineering >> Modélisation dimensionnelle >> DAX >> Analyse statistique >> Visualisation >> Interprétation >> Recommandations.
+		Le dashboard est l'aboutissement de l'analyse, pas le point de départ. Chaque graphique répond à une question analytique précise.
+
 ************************************************************************************************************************************************************************
-L'objectif de ce projet est de construire une solution analytique permettant de :
-		- Structurer les données de demandes de crédit
-		- Analyser la population des demandeurs
-		- Suivre les décisions d'octroi
-		- Comparer les taux d'octroi selon différents profils
-		- Analyser les caractéristiques financières des demandes
-		- Étudier l'association entre l'historique de crédit et la décision
-		- Explorer les différences observées entre certains groupes
-		- Produire des KPI permettant de faciliter l'interprétation des données
-		- Fournir un tableau de bord interactif destiné à l'aide à la décision
+								5. Hypothèses Analytiques
+***************************************************************************************************************************************************************************
+		Les hypotheses sont :
+			
+			---> H1 - Profil : La structure des décisions varie selon les caractéristiques sociodémographiques (Genre, Situation familiale, Éducation, Statut professionnel, Zone).
+			--> H2 - Historique de crédit : Les demandes avec un historique de crédit renseigné favorablement présentent un taux d'octroi significativement différent.\
+			--> H3 - Capacité financière : Les accords et refus présentent des distributions de revenus et de montants demandés différentes.
+			--> H4 - Poids de la demande : Le ratio Montant demandé / Revenu total est un indicateur discriminant de la décision.
+			--> H5 - Stabilité des revenus : La dispersion (variance) des revenus est plus élevée chez les dossiers refusés que chez les dossiers acceptés.
 
-**********************************************************************************************************************************************************************
-								4. Questions métier
-**********************************************************************************************************************************************************************
-	Le tableau de bord doit répondre à cinq questions principales.
-	Question 1 — Vue d'ensemble : « Quelle est la structure globale des demandes et des décisions d'octroi ? »
-		Analyse :
-		- Nombre de demandes
-		- Nombre d'accords
-		- Nombre de refus
-		- Taux d'octroi
-		- Montant moyen demandé
-		- Revenu moyen
-		- Répartition des demandes selon les profils et les zones
+*********************************************************************************************************************************************************************
+								6. Dataset & Audit des Données
+*********************************************************************************************************************************************************************
+		Notre audit presente les informations issues de notre dataset :
+			- Source : dbcredit.csv (614 demandes, 13 variables)
+			- Variable cible : Loan_Status (Y = Accord, N = Refus).
+			- Valeurs manquantes identifiées : Gender (13), Married (3), Dependents (15), Self_Employed (32), LoanAmount (22), Loan_Amount_Term (14), Credit_History (50).
 
-	Question 2 — Historique de crédit 
-				« Quelle association observe-t-on entre l'historique de crédit renseigné et la décision d'octroi ? »
-	Analyse des catégories :
-		- Historique favorable
-		- Historique défavorable
-		- Historique non renseigné
-		L'analyse permettra notamment d'observer si les taux d'octroi diffèrent selon l'information de crédit disponible.
+		Traitement des manquants
+			- Catégorielles : Remplacées par la modalité "Non renseigné". Cela évite de transformer une information inconnue en information négative 
+			- Numériques (LoanAmount, Loan_Amount_Term) : Conservées en null. Pas de remplacement arbitraire par 0.
+			- CoapplicantIncome = 0 : Interprété comme l'absence de co-demandeur, pas comme une anomalie.
 
-	Question 3 — Capacité financière
-				« Comment le revenu et le montant demandé sont-ils associés à la décision d'octroi ? »
-	Les principales variables étudiées seront :
-		- Revenu du demandeur
-		- Revenu du co-demandeur
-		- Revenu total
-		- Montant demandé
-		- Ratio montant demandé / revenu total
-	Le ratio utilisé dans ce projet est : LoanToIncomeRatio = LoanAmount / RevenuTotal
+************************************************************************************************************************************************************************
+								7. Feature Engineering Analytique
+************************************************************************************************************************************************************************
 
+	Deux variables dérivées sont créées pour enrichir l'analyse :
 
-**********************************************************************************************************************************************************************
-			Question 4 — Équité / Fairness
-**********************************************************************************************************************************************************************
+			- RevenuTotal = ApplicantIncome + CoapplicantIncome. Représente la capacité financière brute du ménage.
+			- LoanToIncomeRatio = LoanAmount / Revenu_total : représente le poids du montant demandé relativement au revenu. 
+								Note : Ce n'est pas un DTI complet, faute de données sur les charges.
+
+************************************************************************************************************************************************************************
+								8. Modélisation de Données (Schéma en Étoile)
+**************************************************************************************************************************************************************************
 	
-	Question centrale : « Observe-t-on des différences dans les taux d'octroi entre certains groupes de demandeurs ? »
+	Bien qu'un modèle plat soit suffisant, un modèle dimensionnel a été choisi pour démontrer une bonne pratique analytique.
 
-	Les analyses pourront comparer notamment : Gender, Married, Education, Dependents, éventuellement Self_Employed. L'objectif est d'identifier des écarts observés entre groupes.
-	Ces écarts ne seront pas automatiquement interprétés comme une discrimination. Compte tenu de la taille limitée du dataset, 
-	cette analyse est considérée comme une analyse exploratoire de fairness et non comme une preuve statistique de discrimination.
+			- Fact_Demande (Table de faits) : Loan_ID, ApplicantIncome, CoapplicantIncome, Revenu_total, LoanAmount, LoanToIncome_ratio, statut_pret, clés étrangères (ID_Profil, ID_Credit, ID_Zone).
+			- Dim_Profil : genre, married, niveau_charges (Aucune charge, Faible, Moyenne, Forte, Non renseigné), Education, Self_Employed.
+			- Dim_Credit : Loan_Amount_Term, Credit_History.
+			- Dim_Zone : Property_Area.
 
-***********************************************************************************************************************************************************************
-			Question 5 — Complémentarité avec le Machine Learning
-***********************************************************************************************************************************************************************
+
+9. Mesures DAX Principales
+•	Volume : Nombre Demandes, Nombre Accords, Nombre Refus.
+•	Taux : Taux d'octroi = DIVIDE([Nombre Accords], [Nombre Demandes]).
+•	Valeur : Montant total demandé, Montant moyen demandé, Revenu moyen.
+Statistiques avancées (le cœur de l'analyse)
+•	Revenu médian (plus robuste que la moyenne face aux valeurs extrêmes).
+•	Écart-type Revenu (mesure la dispersion/stabilité des revenus).
+•	Variance Revenu (pour appuyer l'hypothèse H5).
+
+****************************************************************************************************************************************************************************************************
+								9. Architecture Analytique du Dashboard (5 Pages)
+***************************************************************************************************************************************************************************************************
+		Nous allons concevoir 05 pages pour ce travail qui constitueront l'ensemble de notre travail analytique, nous repondrons a certaines questions bien precises:
+
+			Page 1 : Vue d'ensemble des demandes
+				Question : Quelle est la structure globale des demandes et des décisions ?
+				Visuels a produire pour la page: Cartes KPI (Volume, Taux d'octroi, Nombre de demades, Nombres de refus), Répartition géographique (Carte), 
+							Répartition selon les attributs du profil consigné en Dim
+
+			Page 2 :  Historique de crédit et décision
+				Question : Quelle association observe-t-on entre l'historique et la décision ?
+				Visuels : Matrice (Lignes : Credit_History, Colonnes : Décision, Valeurs : Taux d'octroi). Mise en évidence du segment "Non renseigné".
+			
+			Page 3 — Capacité financière et dispersion
+				Question : Comment le revenu et le montant demandé sont-ils associés à la décision ?
+				Visuels : Boîtes à moustaches (Box Plots) pour montrer la distribution des revenus par décision (met en évidence la différence de dispersion). 
+					Nuage de points (Scatter Plot) pour la relation Revenu_total vs LoanAmount avec lignes de tendance
+				Analyse du LoanToIncomeRatio par décision
+
+			Page 4 — Profil et segmentation croisée
+				Question : Quels profils présentent des structures de décision différentes ?
+				Visuels : Arbre de décomposition (Decomposition Tree) pour explorer le taux d'octroi par croisement (ex : Historique → Zone → Éducation). 		
+					Matrice de corrélation visuelle.
+
+			Page 5 — Synthèse décisionnelle
+				Question : Quels enseignements opérationnels en tirer ?
+				Contenu : Pas de graphiques complexes. Des zones de texte structurées avec :
+						- Les 3 principaux constats statistiques.
+						- Les limites de l'analyse.
+						- Les recommandations stratégiques concrètes.
+
+*********************************************************************************************************************************************************************************
+							10. Méthodologie d'Interprétation
+********************************************************************************************************************************************************************************
+
+		Chaque résultat est interprété selon 4 niveaux pour éviter les conclusions hâtives :
 	
-	« Comment l'analyse Business Intelligence complète-t-elle l'approche prédictive développée avec le Machine Learning ? »
+		1. Observation : Que montrent les données ?
+		2. Comparaison : Quel écart entre les groupes ?
+		3. Interprétation : Quelle hypothèse métier peut l'expliquer ?
+		4. Limite : Qu'est-ce que les données ne permettent pas de conclure ? (Corrélation n'est pas causalité).
 
-	Deux approches complémentaires sont utilisées.
-	Business Intelligence — Power BI répond principalement à la question : « Que s'est-il passé dans les décisions historiques et quels profils observe-t-on ? »
+*******************************************************************************************************************************************************************************
+							11. Limites Analytiques
+*******************************************************************************************************************************************************************************
+		Nous avons plusieurs limites notamment : 
 
-	Machine Learning — Le projet Machine Learning répond à une autre question : « Peut-on prédire la décision d'octroi pour une nouvelle demande ? »
+			- Taille du dataset : Le dataset contient seulement 614 demandes. Les résultats doivent donc être interprétés avec prudence.
 
-	Le Machine Learning produit donc une capacité prédictive, tandis que Power BI transforme les données historiques en information analytique destinée à la décision.
+			- Absence d'identifiant client : Loan_ID identifie une demande et non nécessairement un client. 
+						Une analyse de fidélité ou de comportement longitudinal n'est donc pas possible.
+
+			- Absence de dimension temporelle : Le dataset ne contient pas de date. Il n'est donc pas pertinent de construire artificiellement une évolution mensuelle, 
+						annuelle ou une tendance temporelle. c'est impossible d'analyser les tendances, saisonnalités ou évolutions.
+
+			- Absence de données post-octroi : Pas de remboursements, retards ou défauts. On analyse la décision d'octroi, pas la performance du crédit.
+
+			- Revenu # Capacité de remboursement : Le dataset ne contient pas les charges, dettes ou patrimoines.
+
+			- Taille de l'échantillon : 614 demandes. Les segmentations fines (ex : Femme, Mariée, 3+ charges, Freelance) peuvent produire de très petits groupes, limitant la significativité statistique.
+
+*******************************************************************************************************************************************************************************
+							12. Recommandations Stratégiques (Issues de l'Analyse)
+******************************************************************************************************************************************************************************
+		Les recommandations suivantes sont issues de notre travail d'analyses :
+			- Créer un "Score de Stabilité" : Puisque la variance des revenus est très différente entre accords et refus, intégrer un indicateur de régularité des revenus dans le scoring.
+			- Traitement spécifique des "Non renseignés" : Si le taux d'octroi pour Credit_History = Non renseigné est très faible, envisager des produits alternatifs (micro-crédit avec garanties) plutôt qu'un refus systématique.
+			- Analyse du ratio d'endettement : Utiliser le LoanToIncomeRatio comme seuil d'alerte pour demander des garanties supplémentaires.
+
+*************************************************************************************************************************************************************************************
+							13. Organisation du Repository
+*************************************************************************************************************************************************************************************
+Nom du dossier principal : powerbi-credit-analysis/
+
+	racine principale : README.md
+	dossier : data/ - dbcredit.csv
+	dossier : powerbi/ credit_analysis.pbix
+	dossier : screenshots/ overview.png
+			credit_history.png
+			financial_analysis.png
+			segmentation.png
+			synthesis.png
+	dossier : docs/ methodology.md (Optionnel)
 
 
 *********************************************************************************************************************************************************************
-			5. Dataset
-*********************************************************************************************************************************************************************
-	
-	Le dataset contient : 614 observations et 13 variables originales
-	Chaque ligne représente une demande de crédit. Loan_ID identifie la demande et non nécessairement un client unique. Le dataset ne permet donc pas de réaliser :
-			- Une analyse longitudinale des clients
-			- Une analyse des remboursements
-			- Une analyse des défauts dans le temps
-			- Une analyse de portefeuille par période
-			- Une analyse de rentabilité client
-	Aucune date artificielle n'est ajoutée au dataset.
-
-	Variable		Description		Type
--------------------------------------------------------------------------------------------------------------------
-	Loan_ID		Identifiant de la demande	Identifiant
-	Gender		Sexe du demandeur		Catégorielle
-	Married		Situation matrimoniale	Catégorielle
-	Dependents	Nombre de personnes à charge	Catégorielle
-	Education		Niveau d'éducation		Catégorielle
-	Self_Employed	Statut professionnel		Catégorielle
-	ApplicantIncome	Revenu du demandeur	Numérique
-	CoapplicantIncome	Revenu du co-demandeur	Numérique
-	LoanAmount	Montant demandé		Numérique
-	Loan_Amount_Term	Durée du crédit		Numérique / discrète
-	Credit_History	Historique de crédit		Catégorielle
-	Property_Area	Zone de résidence		Catégorielle
-	Loan_Status	Décision d'octroi		Catégorielle
-
-*****************************************************************************************************************************************
-			6. Préparation des données
-******************************************************************************************************************************************
-	La préparation des données est réalisée avec Power Query. Les principales opérations sont :
-	Gestion des valeurs manquantes
-		Pour les variables catégorielles :
-			- Gender → Non renseigné
-			- Married → Non renseigné
-			- Dependents → Non renseigné
-			- Self_Employed → Non renseigné
-			- Credit_History → Non renseigné
-	Les valeurs manquantes des variables financières telles que LoanAmount sont conservées lorsqu'aucune justification ne permet une imputation fiable.
-	 Aucune suppression systématique des lignes n'est effectuée.
-
-*******************************************************************************************************************************************************
-			7. Variables calculées
-*******************************************************************************************************************************************************
-	
-	RevenuTotal = ApplicantIncome + CoapplicantIncome
-
-	Cette variable permet d'analyser la capacité financière globale du dossier.
-	Ratio montant demandé / revenu
-	LoanToIncomeRatio = LoanAmount / RevenuTotal
-	Lorsque le revenu total ne permet pas un calcul valide, le ratio reste non renseigné.
-
-*************************************************************************************************************************************************************
-			8. Traitement des valeurs extrêmes
-**************************************************************************************************************************************************************
-	Les valeurs extrêmes ne sont pas automatiquement supprimées. Une valeur statistiquement élevée n'est pas nécessairement une erreur métier. 
-	La règle méthodologique retenue est : « Les valeurs extrêmes plausibles sont conservées. 
-	Une valeur n'est considérée comme aberrante que lorsqu'un contrôle statistique et/ou métier fournit une justification suffisante pour la traiter. »
-
-
-***************************************************************************************************************************************************************
-			9. Modèle de données : en etoile
-***************************************************************************************************************************************************************
-	Un modèle en étoile a été construit dans Power BI. Nous avons creer  : 
-		- Dim_profil : ID_profil, genre,Education, employed, married, niveau_charges
-		- Dim_zone :ID_zone, Property_Area
-		- Dim_credit : ID_credit, historique_credit ID_profil, ID_credit, ID_zone, Loan_ID, ApplicantIncome, CoapplicantIncome, RevenuTotal, LoanAmount, LoanToIncomeRatio
-		- Fact_Demande :
-
-
-	Le dataset source étant une table tabulaire unique de petite taille, un modèle plat aurait été suffisant techniquement. 
-	Nous avons néanmoins construit un modèle dimensionnel afin de démontrer une démarche de modélisation adaptée aux usages analytiques de Power BI.
-	Cette architecture permet de séparer : 
-		- Les mesures et informations transactionnelles dans la table de faits
-		- Les caractéristiques descriptives dans les dimensions
-	Elle facilite également la création des mesures DAX et la maintenance du modèle.
-
-*****************************************************************************************************************************************************************
-			10. KPI principaux
-*****************************************************************************************************************************************************************
-	les principaux KPI sont : 
-		***** Volume : 
-			-Nombre de demandes
-			- Nombre d'accords
-			- Nombre de refus
-		***** Décision :
-			- Taux d'octroi
-			- Taux de refus
-		**** Financier :
-			- Revenu moyen
-			- Montant moyen demandé
-			- Revenu total moyen
-			- Ratio moyen montant/revenu
-		**** Profil :
-			- Répartition des demandeurs
-			- Répartition par niveau d'éducation
-			- Répartition par situation matrimoniale
-			- Répartition par zone
-
-*********************************************************************************************************************************************************************
-			11. Pages du dashboard
-*********************************************************************************************************************************************************************
-	Page 1 — Vue d'ensemble
-		« Comprendre rapidement la structure globale des demandes et des décisions. »
-
-	Visualisations : KPI Cards, taux d'octroi, accords/refus, répartition géographique, profils des demandeurs, indicateurs financiers.
-
-
-	Page 2 — Credit History & décision
-		« Analyser l'association entre l'historique de crédit renseigné et la décision. »
-	
-	Visualisations : taux d'octroi par Credit_History, nombre de demandes, comparaison favorable / défavorable / non renseigné.
-
-	Page 3 — Capacité financière
-		« Étudier l'association entre les revenus, le montant demandé et la décision. »
-
-	Visualisations : revenu moyen par décision, montant moyen demandé, ratio montant/revenu, segmentation des demandes selon le poids du montant demandé.
-
-	Page 4 — Équité / Fairness
-		« Identifier les différences observées de taux d'octroi entre groupes. »
-
-	Comparaisons : Gender, Married, Education, Dependents, autres caractéristiques pertinentes. L'analyse sera présentée comme exploratoire.
-
-
-	Page 5 — Complementarité BI et Machine Learning (ML)
-		« Quelles sont les observations communes et dissemblantes entre BI et ML. »
-
-	Comparaisons : affichage de resultats clés et conlusion
-
-*********************************************************************************************************************************************************************
-			12. Technologies utilisées
+							14. Technologies utilisées
 *********************************************************************************************************************************************************************
 	nous avons  utilisée pour ce projet Power BI :
 		
@@ -238,41 +193,6 @@ L'objectif de ce projet est de construire une solution analytique permettant de 
 		- DAX
 		- Git
 		- GitHub
-
-
-*********************************************************************************************************************************************************************
-			13. Méthodologie
-*********************************************************************************************************************************************************************
-	Le projet suit les étapes suivantes :
-		1. Compréhension du problème métier  >>>  2. Audit des données  >>>  3. Nettoyage avec Power Query  >>>  4. Transformation des variables   >>>  5. Modélisation en étoile >>>
-		6. Création des mesures DAX  >>>  7. Construction du dashboard  >>> 8. Analyse des résultats  >>>  9. Documentation  >>>  10. Publication GitHub
-	
-	Chaque étape est documentée afin de rendre le projet reproductible.
-
-***********************************************************************************************************************************************************************
-			14. Limites du projet
-***********************************************************************************************************************************************************************
-	les limites de ce projets  sont:
-		- Taille du dataset : Le dataset contient seulement 614 demandes. Les résultats doivent donc être interprétés avec prudence.
-		- Absence de dimension temporelle : Le dataset ne contient pas de date. Il n'est donc pas pertinent de construire artificiellement une évolution mensuelle, 
-						une évolution annuelle ou une tendance temporelle.
-		- Absence de données de remboursement : Le dataset ne permet pas d'analyser les remboursements, les impayés, les défauts, ni la performance réelle des crédits.
-		- Absence d'identifiant client : Loan_ID identifie une demande et non nécessairement un client. Une analyse de fidélité ou de comportement longitudinal n'est donc pas possible.
-		- Analyse de fairness : Les écarts observés entre groupes ne constituent pas à eux seuls une preuve de discrimination. 
-				Ils doivent être considérés comme des signaux nécessitant éventuellement des analyses statistiques et métier complémentaires.
-
-*************************************************************************************************************************************************************************
-			15. Résultats attendus
-************************************************************************************************************************************************************************
-	À la fin du projet, le dashboard devra permettre à un décideur de :
-		- Comprendre la structure des demandes
-		- Identifier les profils les plus représentés
-		- Comparer les taux d'octroi
-		- Analyser les caractéristiques financières des dossiers
-		- Observer l'association entre historique de crédit et décision
-		- Identifier certains écarts entre groupes
-		- Disposer d'indicateurs synthétiques pour faciliter l'analyse
-		- Comprendre comment la Business Intelligence complète une approche Machine Learning
 
 	EN conclusion:
 		Ce projet met en œuvre une démarche de Business Intelligence appliquée à l'analyse des demandes de crédit.
