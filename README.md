@@ -33,17 +33,17 @@ Objectifs analytiques
 	Contenu du dépôt
 	-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	•data/ : Le jeu de données brut (dbcredit.csv).
-	•powerbi/ : Le fichier source Power BI (credit_analysis.pbix).
-	•pdf/ : Le rapport exporté au format PDF pour visualisation rapide.
-	•screenshots/ : Les captures d’écran des 6 pages du rapport.
-	•docs/ : Documentation technique (data_dictionary.md, methodology.md).
+	* data/ : Le jeu de données brut (dbcredit.csv).
+	* powerbi/ : Le fichier source Power BI (credit_analysis.pbix).
+	*documentation/ : Le rapport exporté au format PDF pour visualisation rapide, le dictionaire de données(dictionnary.md) et la methodologie de ce travail (Methodology.md)
+	*screenshots/ : Les captures d’écran des 6 pages du rapport, un modèle de données,  un code DAX et une capture de powerquery des données
+	*vizualisation/ : comportant les boxplots qui ont été importés pour etre utilisés lors de l'analyse
 
 	Stack technique
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	•Power BI Desktop (Modélisation, DAX, Visualisation)
-	•Power Query (Nettoyage, Feature Engineering)
-	•Git/GitHub (Versioning)
+	* Power BI Desktop (Modélisation, DAX, Visualisation)
+	* Power Query (Nettoyage, Feature Engineering)
+	* Git/GitHub (Versioning)
 
 	Auteur
 	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
